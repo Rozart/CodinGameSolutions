@@ -19,7 +19,7 @@ public class TheDescent {
                 mountains[i] = in.nextInt();
             }
 
-            int[] mountainsClone = mountains.clone();
+            int[] mountainsClone = (int[]) mountains.clone();
             Arrays.sort(mountainsClone);
             int highestMountainHeight = mountainsClone[mountainsClone.length - 1];
             boolean isHighestMountain = mountains[spaceX] == highestMountainHeight;
