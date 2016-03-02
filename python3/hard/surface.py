@@ -1,27 +1,23 @@
-import sys
 import copy
 
 l = int(input())
 h = int(input())
 
 
-def print_map(the_map):
-    for y in range(0, len(the_map)):
-        print(" ".join(the_map[y]), file=sys.stderr)
-
-
 def get_neighbours(x, y, the_map):
     neighbours = []
-    if the_map[y][x] == 'O':
-        the_map[y][x] = 'X'
-        if y - 1 >= 0 and the_map[y - 1][x] == 'O':
-            neighbours.append([x, y - 1])
-        if y + 1 < len(the_map) and the_map[y + 1][x] == 'O':
-            neighbours.append([x, y + 1])
-        if x - 1 >= 0 and the_map[y][x - 1] == 'O':
-            neighbours.append([x - 1, y])
-        if x + 1 < len(the_map[0]) and the_map[y][x + 1] == 'O':
-            neighbours.append([x + 1, y])
+    if y - 1 >= 0 and the_map[y - 1][x] == 'O':
+        the_map[y - 1][x] = 'X'
+        neighbours.append([x, y - 1])
+    if y + 1 < h and the_map[y + 1][x] == 'O':
+        the_map[y + 1][x] = 'X'
+        neighbours.append([x, y + 1])
+    if x - 1 >= 0 and the_map[y][x - 1] == 'O':
+        the_map[y][x - 1] = 'X'
+        neighbours.append([x - 1, y])
+    if x + 1 < l and the_map[y][x + 1] == 'O':
+        the_map[y][x + 1] = 'X'
+        neighbours.append([x + 1, y])
     return neighbours
 
 
@@ -30,18 +26,29 @@ for i in range(h):
     row = list(input())
     lake_map.append(row)
 
-#map = prepare_map(map)
-
 n = int(input())
 
+previous_checks = []
 for i in range(n):
-    temp_map = copy.deepcopy(lake_map)
+    temp_map = copy.copy(lake_map)
     x, y = [int(j) for j in input().split()]
-    counter = 0
-    neighbours = get_neighbours(x, y, temp_map)
-    while len(neighbours) > 0:
-        counter += 1
-        neighbour = neighbours.pop(0)
-        print(neighbour, file=sys.stderr)
-        neighbours += get_neighbours(neighbour[0], neighbour[1], temp_map)
-    print(counter)
+    if temp_map[y][x] == '#':
+        print('0')
+    else:
+        result = 0
+        for check in previous_checks:
+            if [x, y] in check:
+                result = len(check)
+                break
+        if result == 0:
+            temp_map[y][x] = 'X'
+            neighbours = [[x, y]]
+            target_neighbours = []
+            while len(neighbours) > 0:
+                neighbour = neighbours.pop(0)
+                target_neighbours.append(neighbour)
+                neighbours = neighbours + \
+                    get_neighbours(neighbour[0], neighbour[1], temp_map)
+                result = len(target_neighbours)
+            previous_checks.append(target_neighbours)
+        print(result)
